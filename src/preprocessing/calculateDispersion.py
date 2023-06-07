@@ -90,7 +90,7 @@ def _visualize_dispersion(dispVector, pos):
     ch_pos = np.array(list(pos.get_positions()['ch_pos'].values()))
     ch_pos = ch_pos[:, 0:2]
 
-    # remove position of EOG1 and EOG2 channels that are not included in the dispersion vector compitation
+    # remove position of EOG1 and EOG2 channels that are not included in the dispersion vector computation
     ch_pos = np.delete(ch_pos, [pos.ch_names.index(i) for i in ['EOG1', 'EOG2']], 0)
 
     im, _ = mne.viz.plot_topomap(dispVector, ch_pos, cmap='RdBu_r', show=False)
