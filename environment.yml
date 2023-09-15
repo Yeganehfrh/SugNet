@@ -1,42 +1,24 @@
-name: otka
+name: SugNet
 
 channels:
   - conda-forge
   - default
 
 dependencies:
-  - python=3.9
+  - python
   - numpy
   - matplotlib
   - seaborn
   - pandas
   - scikit-learn
-  - vtk
-  - pyqt
-  - qt
   - flake8
   - ipykernel
   - jupyter
   - notebook
   - xarray
   - netcdf4
-  - dask
   - openpyxl
   - shap
   - pip
-  - statsmodels
-  - imbalanced-learn
-  - pip:
-    - mne
-    - mne-connectivity
-    - autoreject
-    - mne-bids
-    - pyvista
-    - ipyvtklink
-    - umap
-    - scikit-optimize
-    - autokeras
-    - fooof
-    - neurodsp
-    - frites
-    - "embetter[text]"
+  - mne
+  - mne-bids  
