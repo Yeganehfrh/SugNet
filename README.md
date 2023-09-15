@@ -6,5 +6,5 @@ Run the codes below to set up and activate the virtual environment for this proj
 
 ```bash
 mamba env create --file environment.yml 
-mamba activate otka
+mamba activate SugNet
 ```
