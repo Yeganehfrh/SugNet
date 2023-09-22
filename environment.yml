@@ -21,4 +21,5 @@ dependencies:
   - shap
   - pip
   - mne
-  - mne-bids  
+  - mne-bids
+  - joypy
