@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -68,6 +67,14 @@ def _extract_features(subjects: np.ndarray,
     # TODO: this is a temporary solution
     elif kind.lower() == 'power sensor relative to sham':
         path = data_dir / 'power_sensor_relative_to_sham.csv'
+        data = _query_csv(path, subject_condition)
+        if frequency_band != 'all':
+            col_names = [col for col in data.columns if frequency_band in col]
+        return data[col_names]
+
+    # TODO: this is a temporary solution
+    elif kind.lower() == 'power sensor real relative to sham':
+        path = data_dir / 'power_sensor_real_relative_to_sham.csv'
         data = _query_csv(path, subject_condition)
         if frequency_band != 'all':
             col_names = [col for col in data.columns if frequency_band in col]
