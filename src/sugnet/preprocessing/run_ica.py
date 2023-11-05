@@ -16,6 +16,7 @@ def run_ica(raw,
             n_components=None,
             random_state=97,
             show_plot=False,
+            threshold=0.85,
             report=True):
 
     ica_path = f'data/ica/fitted_icas/sub-{sub}_ses-01_task-{task}_ica.fif'
@@ -39,12 +40,12 @@ def run_ica(raw,
     eog_epochs = mne.preprocessing.create_eog_epochs(raw=raw)  # noqa
     _, eog_scores = ica.find_bads_eog(raw, ch_name=['EOG1', 'EOG2', 'Fpz'])
     # we know that there is two components in the eog template so:
-    [corrmap(icas_eog, template=(0, eog_inds[i]), threshold=0.85, label='blink', plot=show_plot)
+    [corrmap(icas_eog, template=(0, eog_inds[i]), threshold=threshold, label='blink', plot=show_plot)
      for i in range(2)]
     # detecting oculomotor activity using third compenents
     icas_eog.append(eog_3rd_ica)
     eog_inds.append(7)  # use components 7 from 3rd_ica as a template:
-    corrmap(icas_eog, template=(2, eog_inds[2]), threshold=0.85, label='oculomotor', plot=show_plot)
+    corrmap(icas_eog, template=(2, eog_inds[2]), threshold=threshold, label='oculomotor', plot=show_plot)
 
     if 'blink' in ica.labels_.keys():
         eog_comps = ica.labels_['blink']
