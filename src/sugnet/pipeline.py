@@ -26,7 +26,7 @@ def _extract_features(subjects: np.ndarray,
                       power_types='periodic',
                       data_dir=Path('data/classification_datasets'),
                       calculate_diff=False,
-                      diff_conditions=None,
+                      X_diff=None,
                       **kwargs) -> np.ndarray:
     """Extract features from the given subjects.
 
@@ -35,83 +35,52 @@ def _extract_features(subjects: np.ndarray,
     'power source'.
     """
 
+    assert kind.lower() in ['power source', 'power sensor', 'power sensor relative to sham',
+                            'correlation source', 'correlation sensor', 'wpli sensor', 'wpli source',
+                            'power sensor real relative to sham']
+
     subject_condition = pd.DataFrame(subjects).agg(''.join, axis=1).to_list()
-    if diff_conditions is not None:
-        diff_conditions = pd.DataFrame(diff_conditions).agg(''.join, axis=1).to_list()
+    if X_diff is not None:
+        X_diff = pd.DataFrame(X_diff).agg(''.join, axis=1).to_list()
 
     if kind.lower() == 'chance':
         n_features = kwargs.get('n_features', 4)
         X = np.random.rand((len(subjects), n_features))
         return X
 
-    elif kind.lower() == 'power source':
-        path = data_dir / 'power_source.csv'
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
+    fname = '_'.join(kind.lower().split(' ')) + '.csv'
+    path = data_dir / fname
+    data, valid_idx = _query_csv(path, subject_condition)
+    col_names = data.columns
+
+    if kind.lower() == 'power source':
         # TODO: add statement when frequency_band is 'all' and power_types is 'periodic'
-        if frequency_band != 'all' and power_types == 'periodic':
-            col_names = [col for col in data.columns if frequency_band in col]
-        elif power_types == 'nonperiodic':
-            col_names = [col for col in data.columns if 'exponent' in col or 'offset' in col]
-        elif power_types == 'iaf':
-            col_names = [col for col in data.columns if 'IAF' in col]
-        if calculate_diff:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.fillna(0).set_index(valid_idx, drop=True)
-        return data.fillna(0)[col_names]
+        if kind.lower() == 'power source':
+            if frequency_band != 'all' and power_types == 'periodic':
+                col_names = [col for col in data.columns if frequency_band in col]
+            elif power_types == 'nonperiodic':
+                col_names = [col for col in data.columns if 'exponent' in col or 'offset' in col]
+            elif power_types == 'iaf':
+                col_names = [col for col in data.columns if 'IAF' in col]
 
     elif kind.lower() == 'power sensor':
-        path = data_dir / 'power_sensor.csv'
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
-        # check power_types is valid otherwise raise error
         assert power_types in ['decibel', 'absolute']
         if frequency_band != 'all':
             if power_types == 'decibel':
                 col_names = [col for col in data.columns if frequency_band in col and 'decibel' in col]
             elif power_types == 'absolute':
                 col_names = [col for col in data.columns if frequency_band in col and 'decibel' not in col]
-        if calculate_diff:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.set_index(valid_idx, drop=True)
-        return data[col_names].set_index(valid_idx, drop=True)
-
-    elif kind.lower() in ['correlation source', 'correlation sensor',
-                          'wpli sensor', 'wpli source']:
-        fname = '_'.join(kind.lower().split(' ')) + '.csv'
-        path = data_dir / fname
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
+    else:
         if frequency_band != 'all':
             col_names = [col for col in data.columns if frequency_band in col]
-        if calculate_diff:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.set_index(valid_idx, drop=True)
-        return data[col_names].set_index(valid_idx, drop=True)
 
-    # TODO: this is a temporary solution
-    elif kind.lower() == 'power sensor relative to sham':
-        path = data_dir / 'power_sensor_relative_to_sham.csv'
-        data = _query_csv(path, subject_condition)
-        if frequency_band != 'all':
-            col_names = [col for col in data.columns if frequency_band in col]
-        return data[col_names].set_index(valid_idx, drop=True)
+    if calculate_diff:
+        assert X_diff is not None
+        df, _ = _query_csv(path, X_diff)
+        df_ = abs(data[col_names] - df[col_names])
+        return df_.fillna(0).set_index(valid_idx, drop=True)
 
-    # TODO: this is a temporary solution
-    elif kind.lower() == 'power sensor real relative to sham':
-        path = data_dir / 'power_sensor_real_relative_to_sham.csv'
-        data = _query_csv(path, subject_condition)
-        if frequency_band != 'all':
-            col_names = [col for col in data.columns if frequency_band in col]
-        return data[col_names].set_index(valid_idx, drop=True)
-
-    raise ValueError(f'Unknown feature kind: {kind}')
+    return data.fillna(0)[col_names].set_index(valid_idx, drop=True)
 
 
 class FeatureExtractor(TransformerMixin, BaseEstimator):
@@ -121,15 +90,15 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
                  power_types='periodic',
                  data_dir=Path('data/classification_datasets'),
                  calculate_diff: bool = False,
-                 diff_conditions: np.ndarray = None,
+                 X_diff: np.ndarray = None,
                  **kwargs):
         self.kind = kind
         self.frequency_band = frequency_band
         self.power_types = power_types
         self.data_dir = data_dir
-        self.kwargs = kwargs
         self.calculate_diff = calculate_diff
-        self.diff_conditions = diff_conditions
+        self.X_diff = X_diff
+        self.kwargs = kwargs
 
     def fit(self, X, y=None):
         return self
@@ -141,7 +110,7 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
                                     power_types=self.power_types,
                                     data_dir=self.data_dir,
                                     calculate_diff=self.calculate_diff,
-                                    diff_conditions=self.diff_conditions,
+                                    X_diff=self.X_diff,
                                     **self.kwargs)
 
         return self.X_
@@ -149,6 +118,7 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
     def get_feature_names_out(self,
                               feature_names_in: np.ndarray) -> np.ndarray:
         return self.X_.columns.values
+
 
 if __name__ == '__main__':
     # test
