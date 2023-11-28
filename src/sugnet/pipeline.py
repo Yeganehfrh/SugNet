@@ -25,7 +25,7 @@ def _extract_features(subjects: np.ndarray,
                       frequency_band: str,
                       power_types='periodic',
                       data_dir=Path('data/classification_datasets'),
-                      calculate_differences=False,
+                      calculate_diff=False,
                       diff_conditions=None,
                       **kwargs) -> np.ndarray:
     """Extract features from the given subjects.
@@ -55,7 +55,7 @@ def _extract_features(subjects: np.ndarray,
             col_names = [col for col in data.columns if 'exponent' in col or 'offset' in col]
         elif power_types == 'iaf':
             col_names = [col for col in data.columns if 'IAF' in col]
-        if calculate_differences:
+        if calculate_diff:
             assert diff_conditions is not None
             df, _ = _query_csv(path, diff_conditions)
             df_ = abs(data[col_names] - df[col_names])
@@ -73,59 +73,22 @@ def _extract_features(subjects: np.ndarray,
                 col_names = [col for col in data.columns if frequency_band in col and 'decibel' in col]
             elif power_types == 'absolute':
                 col_names = [col for col in data.columns if frequency_band in col and 'decibel' not in col]
-        if calculate_differences:
+        if calculate_diff:
             assert diff_conditions is not None
             df, _ = _query_csv(path, diff_conditions)
             df_ = abs(data[col_names] - df[col_names])
             return df_.set_index(valid_idx, drop=True)
         return data[col_names].set_index(valid_idx, drop=True)
 
-    elif kind.lower() == 'correlation source':
-        path = data_dir / 'correlation_source.csv'
+    elif kind.lower() in ['correlation source', 'correlation sensor',
+                          'wpli sensor', 'wpli source']:
+        fname = '_'.join(kind.lower().split(' ')) + '.csv'
+        path = data_dir / fname
         data, valid_idx = _query_csv(path, subject_condition)
         col_names = data.columns
         if frequency_band != 'all':
             col_names = [col for col in data.columns if frequency_band in col]
-        if calculate_differences:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.set_index(valid_idx, drop=True)
-        return data[col_names].set_index(valid_idx, drop=True)
-
-    elif kind.lower() == 'correlation sensor':
-        path = data_dir / 'correlation_sensor.csv'
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
-        if frequency_band != 'all':
-            col_names = [col for col in data.columns if frequency_band in col]
-        if calculate_differences:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.set_index(valid_idx, drop=True)
-        return data[col_names].set_index(valid_idx, drop=True)
-
-    elif kind.lower() == 'wpli sensor':
-        path = data_dir / 'wpli_sensor.csv'
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
-        if frequency_band != 'all':
-            col_names = [col for col in data.columns if frequency_band in col]
-        if calculate_differences:
-            assert diff_conditions is not None
-            df, _ = _query_csv(path, diff_conditions)
-            df_ = abs(data[col_names] - df[col_names])
-            return df_.set_index(valid_idx, drop=True)
-        return data[col_names].set_index(valid_idx, drop=True)
-
-    elif kind.lower() == 'wpli source':
-        path = data_dir / 'wpli_source.csv'
-        data, valid_idx = _query_csv(path, subject_condition)
-        col_names = data.columns
-        if frequency_band != 'all':
-            col_names = [col for col in data.columns if frequency_band in col]
-        if calculate_differences:
+        if calculate_diff:
             assert diff_conditions is not None
             df, _ = _query_csv(path, diff_conditions)
             df_ = abs(data[col_names] - df[col_names])
@@ -157,7 +120,7 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
                  frequency_band: str = 'all',
                  power_types='periodic',
                  data_dir=Path('data/classification_datasets'),
-                 calculate_differences: bool = False,
+                 calculate_diff: bool = False,
                  diff_conditions: np.ndarray = None,
                  **kwargs):
         self.kind = kind
@@ -165,7 +128,7 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
         self.power_types = power_types
         self.data_dir = data_dir
         self.kwargs = kwargs
-        self.calculate_differences = calculate_differences
+        self.calculate_diff = calculate_diff
         self.diff_conditions = diff_conditions
 
     def fit(self, X, y=None):
@@ -177,7 +140,7 @@ class FeatureExtractor(TransformerMixin, BaseEstimator):
                                     frequency_band=self.frequency_band,
                                     power_types=self.power_types,
                                     data_dir=self.data_dir,
-                                    calculate_differences=self.calculate_differences,
+                                    calculate_diff=self.calculate_diff,
                                     diff_conditions=self.diff_conditions,
                                     **self.kwargs)
 
