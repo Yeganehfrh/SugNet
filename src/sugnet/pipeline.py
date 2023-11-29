@@ -40,6 +40,11 @@ def _extract_features(subjects: np.ndarray,
                             'power sensor real relative to sham']
 
     subject_condition = pd.DataFrame(subjects).agg(''.join, axis=1).to_list()
+    fname = '_'.join(kind.lower().split(' ')) + '.csv'
+    path = data_dir / fname
+    data, valid_idx = _query_csv(path, subject_condition)
+    col_names = data.columns
+
     if X_diff is not None:
         X_diff = pd.DataFrame(X_diff).agg(''.join, axis=1).to_list()
 
@@ -47,21 +52,6 @@ def _extract_features(subjects: np.ndarray,
         n_features = kwargs.get('n_features', 4)
         X = np.random.rand((len(subjects), n_features))
         return X
-
-    fname = '_'.join(kind.lower().split(' ')) + '.csv'
-    path = data_dir / fname
-    data, valid_idx = _query_csv(path, subject_condition)
-    col_names = data.columns
-
-    if kind.lower() == 'power source':
-        # TODO: add statement when frequency_band is 'all' and power_types is 'periodic'
-        if kind.lower() == 'power source':
-            if frequency_band != 'all' and power_types == 'periodic':
-                col_names = [col for col in data.columns if frequency_band in col]
-            elif power_types == 'nonperiodic':
-                col_names = [col for col in data.columns if 'exponent' in col or 'offset' in col]
-            elif power_types == 'iaf':
-                col_names = [col for col in data.columns if 'IAF' in col]
 
     elif kind.lower() == 'power sensor':
         assert power_types in ['decibel', 'absolute']
@@ -78,9 +68,9 @@ def _extract_features(subjects: np.ndarray,
         assert X_diff is not None
         df, _ = _query_csv(path, X_diff)
         df_ = abs(data[col_names] - df[col_names])
-        return df_.fillna(0).set_index(valid_idx, drop=True)
+        return df_.set_index(valid_idx, drop=True)
 
-    return data.fillna(0)[col_names].set_index(valid_idx, drop=True)
+    return data[col_names].set_index(valid_idx, drop=True)
 
 
 class FeatureExtractor(TransformerMixin, BaseEstimator):
