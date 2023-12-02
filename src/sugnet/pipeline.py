@@ -45,9 +45,6 @@ def _extract_features(subjects: np.ndarray,
     data, valid_idx = _query_csv(path, subject_condition)
     col_names = data.columns
 
-    if X_diff is not None:
-        X_diff = pd.DataFrame(X_diff).agg(''.join, axis=1).to_list()
-
     if kind.lower() == 'chance':
         n_features = kwargs.get('n_features', 4)
         X = np.random.rand((len(subjects), n_features))
@@ -65,7 +62,7 @@ def _extract_features(subjects: np.ndarray,
             col_names = [col for col in data.columns if frequency_band in col]
 
     if calculate_diff:
-        assert X_diff is not None
+        X_diff = pd.DataFrame(X_diff).agg(''.join, axis=1).to_list()
         df, _ = _query_csv(path, X_diff)
         df_ = abs(data[col_names] - df[col_names])
         return df_.set_index(valid_idx, drop=True)
