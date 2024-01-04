@@ -1,0 +1,41 @@
+variable_name,description,measurement_unit,allowed_values
+language,language of the experiment,text,"[eng,hun]"
+age_range,age of participant,text,"[under 18, 18 - 24, 25 - 34, 35 - 44, 45 - 54, 55 - 64, 65 - 74, 75 - 84, 85 or older]"
+gender,gender of participant,text,"[Female,Male]"
+country_of_residence,Participant's country of residence,text,text
+motivation_to_get_hypnotized,Motivation about being hypnotized,numeric,0 - 10
+attitude_towards_hypnosis,General attitude towards hypnosis,numeric,[-5 :5]
+tried_hypnosis_before,If the participant had tried hypnosis before,text,"[Yes, No]"
+tried_hypnosis_before_for_pain,if the participant tried hypnosis for pain reduction,text,"[Yes, No]"
+effective_of_hypnoanalgesia,how effective the participant believes hypnosis to be for pain reduction,numeric,0 - 10
+knowledge_level_on_hypnosis,how knowledgeable the participant believes themselves in the topic of hypnosis,numeric,0 - 10
+knowledge_source,where did they get their knowledge about hypnoses,text,text
+knowledge_source_other,additional sources of knowledge aboout hypnosis,text,text
+description_type_1,whether the first presented technique is described as hypnosis or control,text,"[hypnosis, control]"
+procedure_type_1,the name of the first procedure presented to the participant,text,"['relaxation','confusion',embedded','whitenoise']"
+expectancy_1,expected effectivity of the first procedure presented to the participant,numeric,0 - 10
+hypnosis_depth_1,reported hypnosis depth during the first procedure presented to the participant,numeric,0 - 10
+experiences_freetext_1,free text report of the experiences during the first procedure presented to the participant,text,text
+description_type_2,whether the secound presented technique is described as hypnosis or control,text,"[hypnosis, control]"
+procedure_type_2,the name of the secound procedure presented to the participant,text,"['relaxation','confusion',embedded','whitenoise']"
+expectancy_2,expected effectivity of the secound procedure presented to the participant,numeric,0 - 10
+hypnosis_depth_2,reported hypnosis depth during the secound procedure presented to the participant,numeric,0 - 10
+experiences_freetext_2,free text report of the experiences during the secound procedure presented to the participant,text,text
+description_type_3,whether the third presented technique is described as hypnosis or control,text,"[hypnosis, control]"
+procedure_type_3,the name of the third procedure presented to the participant,text,"['relaxation','confusion',embedded','whitenoise']"
+expectancy_3,expected effectivity of the third procedure presented to the participant,numeric,0 - 10
+hypnosis_depth_3,reported hypnosis depth during the third procedure presented to the participant,numeric,0 - 10
+experiences_freetext_3,free text report of the experiences during the third procedure presented to the participant,text,text
+description_type_4,whether the fourth presented technique is described as real or control,text,"[hypnosis, control]"
+procedure_type_4,the name of the fourth procedure presented to the participant,text,"['relaxation','confusion',embedded','whitenoise']"
+expectancy_4,expected effectivity of the fourth procedure presented to the participant,numeric,0 - 10
+hypnosis_depth_4,reported hypnosis depth during the fourth procedure presented to the participant,numeric,0 - 10
+experiences_freetext_4,free text report of the experiences during the fourth procedure presented to the participant,text,text
+prefered_procedure,which technique did the participant prefer from the ones described as real hypnosis procedures,text,"['relaxation','confusion',embedded','whitenoise']"
+suspected_control,whether the participant suspected that one of the procedures described as real hypnosis wasn't real,text,"[Yes,No]"
+which_real_hypnosis,which of the of the procedures described as real hypnosis does the participant believe to be real,text,"['relaxation','confusion',embedded','whitenoise']"
+suspected_real_hypnosis,whether the participant suspected that one of the procedures described as control was real hypnosis,text,"[Yes,No]"
+which_real_control,which of the of the procedures described as control does the participant believe to be real hypnosis,text,"['relaxation','confusion',embedded','whitenoise']"
+felt_discomfort,whether the participant experienced any disconfort or side-effect during the study,text,"[Yes,No]"
+felt_discomfort_free_description,description of the disconfort or side-effect,text,text
+bids_id,participants id in the BIDS dataset,text,text
