@@ -49,7 +49,7 @@ for subject_path in Path('data/raw_test').glob('*.vhdr'):
 
         raw_segment = raw.copy().crop(tmin=tmin, tmax=tmax)
 
-        # define a more meaningfull annotations
+        # define a more meaningful annotations
         onset = raw_segment.annotations.onset
         new_annot = mne.Annotations(onset=[0],
                                     duration=[onset[1]-onset[0]],
