@@ -64,7 +64,7 @@ def _extract_features(subjects: np.ndarray,
     if calculate_diff:
         X_diff = pd.DataFrame(X_diff).agg(''.join, axis=1).to_list()
         df, _ = _query_csv(path, X_diff)
-        df_ = abs(data[col_names] - df[col_names])
+        df_ = data[col_names] - df[col_names]
         return df_.set_index(valid_idx, drop=True)
 
     return data[col_names].set_index(valid_idx, drop=True)
