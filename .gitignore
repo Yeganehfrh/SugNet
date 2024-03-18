@@ -2,6 +2,7 @@ data/
 outputs/
 docs/
 models/
+archived/
 
 .DS_Store
 *.pyc
@@ -21,4 +22,3 @@ notebooks/24222_findBadCh.py
 notebooks/newDocsCreator.ipynb
 .ipynb_checkpoints/
 venv/
-archived/
